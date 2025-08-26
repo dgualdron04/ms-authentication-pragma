@@ -5,6 +5,7 @@ import co.com.pragma.model.user.gateways.UserRepository;
 import co.com.pragma.usecase.user.IUserUseCase;
 import co.com.pragma.usecase.user.UserUseCase;
 import co.com.pragma.usecase.user.validation.*;
+import gateways.TransactionalGateway;
 import org.springframework.context.annotation.*;
 
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
 public class UseCasesConfig {
         @Primary
         @Bean(name = "userUseCaseCore")
-        public IUserUseCase userUseCaseCore(UserRepository userRepository) {
+        public IUserUseCase userUseCaseCore(UserRepository userRepository, TransactionalGateway transactionalGateway) {
                 List<ReactiveValidator<User>> validators = List.of(
                         new RequiredFieldsValidator(),
                         new SalaryRangeValidator(),
@@ -26,6 +27,6 @@ public class UseCasesConfig {
                         new EmailUniquessValidator(userRepository)
                 );
 
-                return new UserUseCase(userRepository, validators);
+                return new UserUseCase(userRepository, validators, transactionalGateway);
         }
 }
