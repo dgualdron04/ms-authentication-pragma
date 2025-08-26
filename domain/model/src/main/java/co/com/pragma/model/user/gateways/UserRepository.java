@@ -9,6 +9,5 @@ import java.util.UUID;
 public interface UserRepository {
     Mono<User> save(User user);
     Flux<User> findAll();
-    Mono<User> findById(UUID id);
-    Mono<Void> deleteById(UUID id);
+    Mono<Boolean> existsByEmail(String email);
 }

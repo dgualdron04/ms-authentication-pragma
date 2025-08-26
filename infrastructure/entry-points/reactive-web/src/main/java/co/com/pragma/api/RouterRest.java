@@ -1,6 +1,7 @@
 package co.com.pragma.api;
 
 import co.com.pragma.api.config.UserPath;
+import co.com.pragma.api.exception.GlobalErrorHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,11 +19,9 @@ public class RouterRest {
     private final Handler userHandler;
 
     @Bean
-    public RouterFunction<ServerResponse> routerFunction(Handler handler) {
+    public RouterFunction<ServerResponse> routerFunction(Handler handler, GlobalErrorHandler globalErrorHandler) {
         return route(POST(userPath.getUsers()), userHandler::listenSaveUser)
-                .andRoute(PUT(userPath.getUsers()), userHandler::listenUpdateUser)
-                .andRoute(DELETE(userPath.getUsersById()), userHandler::listenDeleteUser)
                 .andRoute(GET(userPath.getUsers()), userHandler::listenGetAllUsers)
-                .andRoute(GET(userPath.getUsersById()), userHandler::listenGetUserById);
+                .filter(globalErrorHandler);
     }
 }

@@ -30,5 +30,5 @@ public class User {
 
 //    private Long rolId;
 
-    private int baseSalary;
+    private Integer baseSalary;
 }
