@@ -1,9 +1,11 @@
 package co.com.pragma.api;
 
 import co.com.pragma.api.dto.request.UserRequest;
+import co.com.pragma.api.exception.model.InternalException;
 import co.com.pragma.api.mapper.UserApiMapper;
 import co.com.pragma.model.user.User;
 import co.com.pragma.usecase.user.IUserUseCase;
+import exception.DomainException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,8 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
-
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -28,7 +28,8 @@ public class Handler {
                 .map(userApiMapper::toResponse)
                 .flatMap(res -> ServerResponse.status(HttpStatus.CREATED)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(res));
+                        .bodyValue(res))
+                .onErrorResume(ex -> Mono.error(ex instanceof DomainException ? ex : new InternalException(ex, null)));
     }
 
     public Mono<ServerResponse> listenGetAllUsers(ServerRequest serverRequest) {

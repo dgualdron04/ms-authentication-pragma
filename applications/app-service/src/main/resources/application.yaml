@@ -9,6 +9,13 @@ spring:
     console:
       enabled: true
       path: "/h2"
+logging:
+  level:
+    root: INFO #PROD - INFO
+    co.com.pragma: DEBUG #PROD - INFO/DEBUG
+    org.springframework.r2dbc: WARN
+    io.r2dbc.postgresql.QUERY: INFO # PROD - INFO O WARN
+    io.r2dbc.postgresql.PARAM: WARN # PROD - WARM O OFF
 adapters:
   r2dbc:
     host: localhost

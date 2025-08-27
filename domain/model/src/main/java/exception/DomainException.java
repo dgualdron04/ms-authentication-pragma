@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @Getter
-public sealed class DomainException extends RuntimeException permits AlreadyExistsException, BusinessRuleViolatedException, NotFoundException {
+public class DomainException extends RuntimeException implements BaseException {
     private final String errorCode;
     private final String title;
     private final String message;
