@@ -1,7 +1,8 @@
-package co.com.pragma.usecase.user.validation;
+package co.com.pragma.usecase.user.validation.email;
 
 import co.com.pragma.model.user.User;
 import co.com.pragma.model.user.gateways.UserRepository;
+import co.com.pragma.usecase.user.validation.ReactiveValidator;
 import exception.AlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;

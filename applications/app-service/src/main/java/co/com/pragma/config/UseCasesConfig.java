@@ -5,6 +5,9 @@ import co.com.pragma.model.user.gateways.UserRepository;
 import co.com.pragma.usecase.user.IUserUseCase;
 import co.com.pragma.usecase.user.UserUseCase;
 import co.com.pragma.usecase.user.validation.*;
+import co.com.pragma.usecase.user.validation.email.EmailFieldValidatorAdapter;
+import co.com.pragma.usecase.user.validation.email.EmailStringValidator;
+import co.com.pragma.usecase.user.validation.email.EmailUniquessValidator;
 import gateways.CustomLogger;
 import gateways.TransactionalGateway;
 import org.springframework.context.annotation.*;
@@ -25,7 +28,7 @@ public class UseCasesConfig {
                 List<ReactiveValidator<User>> validators = List.of(
                         new RequiredFieldsValidator(),
                         new SalaryRangeValidator(),
-                        new EmailFormatValidator(),
+                        new EmailFieldValidatorAdapter(new EmailStringValidator()),
                         new EmailUniquessValidator(userRepository)
                 );
 

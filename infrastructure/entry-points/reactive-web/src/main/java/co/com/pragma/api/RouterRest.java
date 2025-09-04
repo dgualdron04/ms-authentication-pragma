@@ -19,9 +19,11 @@ public class RouterRest {
     private final Handler userHandler;
 
     @Bean
-    public RouterFunction<ServerResponse> routerFunction(Handler handler, GlobalErrorHandler globalErrorHandler) {
+    public RouterFunction<ServerResponse> routerFunction(GlobalErrorHandler globalErrorHandler) {
         return route(POST(userPath.getUsers()), userHandler::listenSaveUser)
                 .andRoute(GET(userPath.getUsers()), userHandler::listenGetAllUsers)
+                .andRoute(GET(userPath.getExistsByEmail()), userHandler::existsByEmail)
+                .andRoute(GET(userPath.getExistsByIdNumber()), userHandler::existsByIdNumber)
                 .filter(globalErrorHandler);
     }
 }

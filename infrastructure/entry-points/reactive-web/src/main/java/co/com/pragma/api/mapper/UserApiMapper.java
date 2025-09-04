@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel="spring")
 public class UserApiMapper {
     public User toDomain(UserRequest userRequest) {
-        return new User(null,
+        return new User(
                 userRequest.firstName(),
                 userRequest.lastName(),
                 userRequest.email(),
@@ -20,8 +20,7 @@ public class UserApiMapper {
     }
 
     public UserResponse toResponse(User user) {
-        return new UserResponse(
-            user.getId(),
+        return new UserResponse(null,
             user.getFirstName(),
             user.getLastName(),
             user.getEmail(),

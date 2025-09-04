@@ -12,4 +12,6 @@ import org.springframework.stereotype.Component;
 public class UserPath {
     private String users;
     private String usersById;
+    private String existsByEmail;
+    private String existsByIdNumber;
 }

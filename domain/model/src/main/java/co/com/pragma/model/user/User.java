@@ -14,8 +14,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class User {
-    private UUID id;
-
     private String firstName;
 
     private String lastName;

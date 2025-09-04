@@ -11,8 +11,8 @@ spring:
       path: "/h2"
 logging:
   level:
-    root: INFO #PROD - INFO
-    co.com.pragma: DEBUG #PROD - INFO/DEBUG
+    root: INFO # PROD - INFO
+    co.com.pragma: DEBUG # PROD - INFO/DEBUG
     org.springframework.r2dbc: WARN
     io.r2dbc.postgresql.QUERY: INFO # PROD - INFO O WARN
     io.r2dbc.postgresql.PARAM: WARN # PROD - WARM O OFF
@@ -42,3 +42,5 @@ routes:
   paths:
     users: "/api/v1/usuarios"
     usersById: "/api/v1/usuarios/{id}"
+    existsByEmail: "/api/v1/usuarios/email/{email}"
+    existsByIdNumber: "/api/v1/usuarios/idNumber/{idNumber}"

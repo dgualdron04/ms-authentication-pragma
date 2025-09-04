@@ -5,6 +5,8 @@ import co.com.pragma.api.exception.model.InternalException;
 import co.com.pragma.api.mapper.UserApiMapper;
 import co.com.pragma.model.user.User;
 import co.com.pragma.usecase.user.IUserUseCase;
+import co.com.pragma.usecase.user.UserUseCase;
+import exception.BusinessRuleViolatedException;
 import exception.DomainException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,6 +15,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+
+import javax.print.attribute.standard.Media;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -40,5 +45,23 @@ public class Handler {
                 .body(userUseCase.getAllUsers(), User.class);
     }
 
+    public Mono<ServerResponse> existsByEmail(ServerRequest serverRequest) {
+        final String email = serverRequest.pathVariable("email");
+
+        return userUseCase.existsByEmail(email)
+                .flatMap(exists -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(Map.of("exists", exists)));
+    }
+
+    public Mono<ServerResponse> existsByIdNumber(ServerRequest serverRequest) {
+        final Long idNumber = Long.parseLong(serverRequest.pathVariable("idNumber"));
+
+        return userUseCase.existsByIdNumber(idNumber)
+                .flatMap(exists -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(Map.of("exists", exists)));
+
+    }
 
 }

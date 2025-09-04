@@ -36,4 +36,7 @@ public class UserReactiveRepositoryAdapter extends ReactiveAdapterOperations<
         public Mono<Boolean> existsByEmail(String email) {
             return repository.existsByEmail(email);
         }
+
+        @Override
+        public Mono<Boolean> existsByIdNumber(Long idNumber) { return repository.existsByIdNumber(idNumber); }
 }

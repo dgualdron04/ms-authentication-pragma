@@ -3,6 +3,8 @@ package co.com.pragma.usecase.user;
 import co.com.pragma.model.user.User;
 import co.com.pragma.model.user.gateways.UserRepository;
 import co.com.pragma.usecase.user.validation.ReactiveValidator;
+import co.com.pragma.usecase.user.validation.email.EmailStringValidator;
+import exception.BusinessRuleViolatedException;
 import gateways.CustomLogger;
 import gateways.TransactionalGateway;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +38,7 @@ public class UserUseCase implements IUserUseCase {
         return transactionalGateway.executeTransactional(
                 pipeline.flatMap(userRepository::save)
                         .doOnSubscribe(sub -> logger.debug("Persisting user email = {}", user.getEmail()))
-                        .doOnSuccess(saved -> logger.info("User persisted succesfully - id = {}", saved.getId()))
+                        .doOnSuccess(saved -> logger.info("User persisted succesfully - idNumber = {}", saved.getIdNumber()))
                         .doOnError(e -> logger.warn("Error persisting user email = {}", user.getEmail(), e))
         );
     }
@@ -44,5 +46,26 @@ public class UserUseCase implements IUserUseCase {
     public Flux<User> getAllUsers() {
         logger.info("getAllUsers: find all users.");
         return userRepository.findAll();
+    }
+
+    public Mono<Boolean> existsByEmail(String email) {
+        logger.info("existsByEmail: email={}", email);
+
+        return Mono.justOrEmpty(email)
+                .switchIfEmpty(Mono.error(new BusinessRuleViolatedException("The email address is required.")))
+                .doOnSubscribe(s -> logger.trace("Validation pipeline started for email = {}", email))
+                .flatMap(new EmailStringValidator()::validate)
+                .flatMap(userRepository::existsByEmail)
+                .doOnNext(exists -> logger.info("existsByEmail result = {}", exists));
+    }
+
+    public Mono<Boolean> existsByIdNumber(Long idNumber) {
+        logger.info("existsByIdNumber: idNumber={}", idNumber);
+
+        return Mono.justOrEmpty(idNumber)
+                .switchIfEmpty(Mono.error(new BusinessRuleViolatedException("The Id Number is required.")))
+                .doOnSubscribe(s -> logger.trace("Validation pipeline started for id number = {}", idNumber))
+                .flatMap(userRepository::existsByIdNumber)
+                .doOnNext(exists -> logger.info("existsByIdNumber result = {}", exists));
     }
 }

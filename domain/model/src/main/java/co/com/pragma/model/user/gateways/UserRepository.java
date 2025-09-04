@@ -10,4 +10,5 @@ public interface UserRepository {
     Mono<User> save(User user);
     Flux<User> findAll();
     Mono<Boolean> existsByEmail(String email);
+    Mono<Boolean> existsByIdNumber(Long idNumber);
 }
