@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Setter
 @Component
 @ConfigurationProperties(prefix = "routes.paths")
-public class UserPath {
+public final class UserPath {
     private String users;
     private String usersById;
     private String existsByEmail;

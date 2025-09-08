@@ -1,6 +1,7 @@
 package co.com.pragma.api;
 
 import co.com.pragma.api.config.UserPath;
+import co.com.pragma.api.docs.UserDocs;
 import co.com.pragma.api.exception.GlobalErrorHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -8,8 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import static org.springframework.web.reactive.function.server.RequestPredicates.*;
-import static org.springframework.web.reactive.function.server.RouterFunctions.route;
+import static org.springdoc.webflux.core.fn.SpringdocRouteBuilder.route;
 
 @Configuration
 @RequiredArgsConstructor
@@ -17,13 +17,17 @@ public class RouterRest {
 
     private final UserPath userPath;
     private final Handler userHandler;
+    private final UserDocs userDocs;
 
     @Bean
     public RouterFunction<ServerResponse> routerFunction(GlobalErrorHandler globalErrorHandler) {
-        return route(POST(userPath.getUsers()), userHandler::listenSaveUser)
-                .andRoute(GET(userPath.getUsers()), userHandler::listenGetAllUsers)
-                .andRoute(GET(userPath.getExistsByEmail()), userHandler::existsByEmail)
-                .andRoute(GET(userPath.getExistsByIdNumber()), userHandler::existsByIdNumber)
-                .filter(globalErrorHandler);
+        var routes = route()
+                .POST(userPath.getUsers(), req -> true, userHandler::listenSaveUser, userDocs.save())
+                .GET (userPath.getExistsByEmail(), userHandler::existsByEmail, userDocs.existsByEmail())
+                .GET (userPath.getExistsByIdNumber(), userHandler::existsByIdNumber, userDocs.existsByIdNumber())
+                .build();
+
+        return routes.filter(globalErrorHandler);
+
     }
 }
