@@ -1,12 +1,13 @@
 package co.com.pragma.usecase.user.validation;
 
 import co.com.pragma.model.user.User;
+import co.com.pragma.model.user.UserView;
 import reactor.core.publisher.Mono;
 import exception.BusinessRuleViolatedException;
 
-public class SalaryRangeValidator implements ReactiveValidator<User> {
+public class SalaryRangeValidator implements ReactiveValidator<UserView> {
     @Override
-    public Mono<User> validate(User u) {
+    public Mono<UserView> validate(UserView u) {
         System.out.println(u);
         int s = u.getBaseSalary();
         if (s < 0 || s > 15_000_000) {

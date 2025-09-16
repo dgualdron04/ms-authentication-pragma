@@ -1,5 +1,7 @@
-package co.com.pragma.r2dbc;
+package co.com.pragma.r2dbc.user;
 
+import co.com.pragma.model.user.User;
+import co.com.pragma.model.user.UserWithId;
 import co.com.pragma.r2dbc.entity.UserEntity;
 import org.springframework.data.repository.query.ReactiveQueryByExampleExecutor;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
@@ -11,4 +13,6 @@ import java.util.UUID;
 public interface UserReactiveRepository extends ReactiveCrudRepository<UserEntity, UUID>, ReactiveQueryByExampleExecutor<UserEntity> {
     Mono<Boolean> existsByEmail(String email);
     Mono<Boolean> existsByIdNumber(Long idNumber);
+    Mono<UserEntity> findByEmail(String email);
+    Mono<UserWithId> findWithIdByEmail(String email);
 }

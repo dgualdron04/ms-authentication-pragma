@@ -14,4 +14,7 @@ public final class UserPath {
     private String usersById;
     private String existsByEmail;
     private String existsByIdNumber;
+    private String login;
+    private String hello;
+    private String swagger;
 }

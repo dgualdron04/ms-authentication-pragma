@@ -1,6 +1,9 @@
 package co.com.pragma.config;
 
+import co.com.pragma.model.role.gateways.RoleRepository;
+import co.com.pragma.model.token.gateways.PasswordEncoderGateway;
 import co.com.pragma.model.user.User;
+import co.com.pragma.model.user.UserView;
 import co.com.pragma.model.user.gateways.UserRepository;
 import co.com.pragma.usecase.user.IUserUseCase;
 import co.com.pragma.usecase.user.UserUseCase;
@@ -23,15 +26,15 @@ import java.util.List;
 public class UseCasesConfig {
         @Primary
         @Bean(name = "userUseCaseCore")
-        public IUserUseCase userUseCaseCore(UserRepository userRepository, TransactionalGateway transactionalGateway, CustomLogger customLogger) {
+        public IUserUseCase userUseCaseCore(UserRepository userRepository, RoleRepository roleRepository, TransactionalGateway transactionalGateway, CustomLogger customLogger, PasswordEncoderGateway passwordEncoder) {
 
-                List<ReactiveValidator<User>> validators = List.of(
+                List<ReactiveValidator<UserView>> validators = List.of(
                         new RequiredFieldsValidator(),
                         new SalaryRangeValidator(),
                         new EmailFieldValidatorAdapter(new EmailStringValidator()),
                         new EmailUniquessValidator(userRepository)
                 );
 
-                return new UserUseCase(userRepository, validators, transactionalGateway, customLogger);
+                return new UserUseCase(userRepository, roleRepository, validators, transactionalGateway, customLogger, passwordEncoder);
         }
 }

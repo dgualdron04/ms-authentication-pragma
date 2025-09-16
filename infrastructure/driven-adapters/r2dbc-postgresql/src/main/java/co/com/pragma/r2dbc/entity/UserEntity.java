@@ -36,7 +36,11 @@ public class UserEntity {
 
     private String phone;
 
-//    private Long rolId;
+    @Column("password")
+    private String password;
+
+    private UUID roleId;
+
     @Column("basesalary")
     private int baseSalary;
 }

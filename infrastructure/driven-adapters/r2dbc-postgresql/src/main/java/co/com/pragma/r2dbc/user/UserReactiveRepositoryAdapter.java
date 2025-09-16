@@ -1,6 +1,8 @@
-package co.com.pragma.r2dbc;
+package co.com.pragma.r2dbc.user;
 
+import co.com.pragma.model.token.Token;
 import co.com.pragma.model.user.User;
+import co.com.pragma.model.user.UserWithId;
 import co.com.pragma.model.user.gateways.UserRepository;
 import co.com.pragma.r2dbc.entity.UserEntity;
 import co.com.pragma.r2dbc.helper.ReactiveAdapterOperations;
@@ -39,4 +41,24 @@ public class UserReactiveRepositoryAdapter extends ReactiveAdapterOperations<
 
         @Override
         public Mono<Boolean> existsByIdNumber(Long idNumber) { return repository.existsByIdNumber(idNumber); }
+
+        @Override
+        public Mono<Token> login(String email, String password) {
+            return null;
+        }
+
+        @Override
+        public Mono<User> findByEmail(String email) {
+            return repository.findByEmail(email)
+                    .map(e -> mapper.map(e, User.class));
+        }
+
+        @Override
+        public Mono<UserWithId> findWithIdByEmail(String email) {
+            return repository.findByEmail(email)
+                    .map(e -> new UserWithId(
+                            e.getId(),
+                            mapper.map(e, User.class)
+                    ));
+        }
 }

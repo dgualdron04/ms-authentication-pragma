@@ -1,6 +1,10 @@
 package co.com.pragma.usecase.user;
 
+import co.com.pragma.model.role.gateways.RoleRepository;
+import co.com.pragma.model.token.Token;
+import co.com.pragma.model.token.gateways.PasswordEncoderGateway;
 import co.com.pragma.model.user.User;
+import co.com.pragma.model.user.UserView;
 import co.com.pragma.model.user.gateways.UserRepository;
 import co.com.pragma.usecase.user.validation.ReactiveValidator;
 import co.com.pragma.usecase.user.validation.email.EmailStringValidator;
@@ -12,31 +16,62 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 public class UserUseCase implements IUserUseCase {
 
     private final UserRepository userRepository;
-    private final List<ReactiveValidator<User>> validators;
+    private final RoleRepository roleRepository;
+    private final List<ReactiveValidator<UserView>> validators;
     private final TransactionalGateway transactionalGateway;
     private final CustomLogger logger;
+    private final PasswordEncoderGateway passwordEncoder;
 
-    public Mono<User> saveUser(User user) {
+    public Mono<UserView> save(UserView user) {
         logger.info("SaveUser: start email={}", user.getEmail());
-        Mono<User> pipeline = Mono.just(user)
+
+        Mono<UUID> roleIdMono = roleRepository.findIdByName(user.getRole())
+                .doOnSubscribe(s -> logger.debug("role.lookup.start role: role={}", user.getRole()));
+
+        Mono<UserView> pipeline = Mono.just(user)
                 .doOnSubscribe(
                         sub -> logger.trace("Validation pipeline started for email={}", user.getEmail()
                         )
                 );
-        for (ReactiveValidator<User> v : validators) {
+        for (ReactiveValidator<UserView> v : validators) {
             pipeline = pipeline
                     .doOnNext(u -> logger.trace("Running validator {}", v.getClass().getSimpleName()))
                     .flatMap(v::validate)
                     .doOnError(e -> logger.warn("Validation failed in {}: {}", v.getClass().getSimpleName(), e.toString()));
         }
 
+
         return transactionalGateway.executeTransactional(
-                pipeline.flatMap(userRepository::save)
+                pipeline.zipWith(roleIdMono)
+                        .map(tuple -> User.builder()
+                                .firstName(user.getFirstName())
+                                .lastName(user.getLastName())
+                                .email(user.getEmail())
+                                .birthDate(user.getBirthDate())
+                                .idNumber(user.getIdNumber())
+                                .phone(user.getPhone())
+                                .roleId(tuple.getT2())
+                                .baseSalary(user.getBaseSalary())
+                                .password(passwordEncoder.encode(user.getPassword()))
+                                .build())
+                        .flatMap(userRepository::save)
+                        .map(saved -> UserView.builder()
+                                .firstName(saved.getFirstName())
+                                .lastName(saved.getLastName())
+                                .email(saved.getEmail())
+                                .birthDate(saved.getBirthDate())
+                                .idNumber(saved.getIdNumber())
+                                .phone(saved.getPhone())
+                                .role(user.getRole())
+                                .baseSalary(saved.getBaseSalary())
+                                .password(saved.getPassword())
+                                .build())
                         .doOnSubscribe(sub -> logger.debug("Persisting user email = {}", user.getEmail()))
                         .doOnSuccess(saved -> logger.info("User persisted succesfully - idNumber = {}", saved.getIdNumber()))
                         .doOnError(e -> logger.warn("Error persisting user email = {}", user.getEmail(), e))

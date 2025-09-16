@@ -14,6 +14,7 @@ public record UserRequest(
         LocalDate birthDate,
         String idNumber,
         String phone,
-        Integer baseSalary
+        Integer baseSalary,
+        String password
 ) {
 }

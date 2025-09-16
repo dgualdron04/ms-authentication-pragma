@@ -1,5 +1,6 @@
 package co.com.pragma.r2dbc.helper;
 
+import co.com.pragma.model.user.UserWithId;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.data.domain.Example;
 import org.springframework.data.repository.query.ReactiveQueryByExampleExecutor;
@@ -49,10 +50,6 @@ public abstract class ReactiveAdapterOperations<E, D, I, R extends ReactiveCrudR
 
     protected Flux<D> saveData(Flux<D> data) {
         return repository.saveAll(data);
-    }
-
-    public Mono<E> findById(I id) {
-        return repository.findById(id).map(this::toEntity);
     }
 
     public Flux<E> findByExample(E entity) {

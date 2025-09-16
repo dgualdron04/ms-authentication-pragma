@@ -1,6 +1,8 @@
 package co.com.pragma.api.docs;
 
 import co.com.pragma.api.config.UserPath;
+import co.com.pragma.api.dto.request.LogInDTO;
+import co.com.pragma.api.dto.request.TokenDTO;
 import co.com.pragma.api.dto.request.UserRequest;
 import co.com.pragma.api.dto.response.UserResponse;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -48,6 +50,16 @@ public class UserDocs {
             builder.parameter(parameterBuilder().name("number").in(ParameterIn.PATH).required(true)
                     .schema(schemaBuilder().implementation(UserRequest.class)));
             jsonResp(builder, "200", Boolean.class);
+            errs(builder);
+        };
+    }
+
+    public Consumer<Builder> login() {
+        return builder -> {
+            builder.operationId("login").tag("User").description("Login user");
+            builder.parameter(parameterBuilder().name("email").in(ParameterIn.PATH).required(true)
+                            .schema(schemaBuilder().implementation(LogInDTO.class)));
+            jsonResp(builder, "200", TokenDTO.class);
             errs(builder);
         };
     }

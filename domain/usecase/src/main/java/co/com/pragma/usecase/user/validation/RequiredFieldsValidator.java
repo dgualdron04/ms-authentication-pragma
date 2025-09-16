@@ -1,13 +1,14 @@
 package co.com.pragma.usecase.user.validation;
 
 import co.com.pragma.model.user.User;
+import co.com.pragma.model.user.UserView;
 import reactor.core.publisher.Mono;
 import exception.BusinessRuleViolatedException;
 
 
-public class RequiredFieldsValidator implements ReactiveValidator<User> {
+public class RequiredFieldsValidator implements ReactiveValidator<UserView> {
     @Override
-    public Mono<User> validate(User u) {
+    public Mono<UserView> validate(UserView u) {
         if (isBlank(u.getFirstName()))
             return Mono.error(new BusinessRuleViolatedException("The First Name field is required."));
         if (isBlank(u.getLastName()))

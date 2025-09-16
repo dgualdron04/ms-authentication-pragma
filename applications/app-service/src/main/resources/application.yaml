@@ -37,10 +37,15 @@ management:
         enabled: true
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
-
 routes:
   paths:
     users: "/api/v1/usuarios"
     usersById: "/api/v1/usuarios/{id}"
     existsByEmail: "/api/v1/usuarios/email/{email}"
     existsByIdNumber: "/api/v1/usuarios/idNumber/{idNumber}"
+    login: "/api/v1/login"
+    hello: "/hello"
+    swagger: "/webjars/swagger-ui/**"
+jwt:
+  secret: "GKU2sCyjHN2D4KXdLKsxRn3UDKI1TjTdP3pxzMzfIE8="
+  expiration: 3600

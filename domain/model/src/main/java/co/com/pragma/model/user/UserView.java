@@ -1,19 +1,17 @@
 package co.com.pragma.model.user;
-import lombok.Builder;
+
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import utils.RoleTypes;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
 @Getter
-@Setter
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class User {
+public class UserView {
     private String firstName;
 
     private String lastName;
@@ -26,9 +24,9 @@ public class User {
 
     private String phone;
 
-    private String password;
-
-    private UUID roleId;
+    private RoleTypes role;
 
     private Integer baseSalary;
+
+    private String password;
 }

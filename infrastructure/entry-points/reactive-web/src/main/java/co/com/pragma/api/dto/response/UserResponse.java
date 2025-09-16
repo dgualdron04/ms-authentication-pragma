@@ -1,5 +1,7 @@
 package co.com.pragma.api.dto.response;
 
+import utils.RoleTypes;
+
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -10,6 +12,8 @@ public record UserResponse(UUID id,
                            LocalDate birthDate,
                            String idNumber,
                            String phone,
-                           int baseSalary
+                           RoleTypes role,
+                           int baseSalary,
+                           String password
 ) {
 };
