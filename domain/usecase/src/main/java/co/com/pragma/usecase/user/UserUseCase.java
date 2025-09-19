@@ -1,9 +1,10 @@
 package co.com.pragma.usecase.user;
 
 import co.com.pragma.model.role.gateways.RoleRepository;
-import co.com.pragma.model.token.Token;
 import co.com.pragma.model.token.gateways.PasswordEncoderGateway;
 import co.com.pragma.model.user.User;
+import co.com.pragma.model.user.UserFilter;
+import co.com.pragma.model.user.UserSearchFilters;
 import co.com.pragma.model.user.UserView;
 import co.com.pragma.model.user.gateways.UserRepository;
 import co.com.pragma.usecase.user.validation.ReactiveValidator;
@@ -78,11 +79,6 @@ public class UserUseCase implements IUserUseCase {
         );
     }
 
-    public Flux<User> getAllUsers() {
-        logger.info("getAllUsers: find all users.");
-        return userRepository.findAll();
-    }
-
     public Mono<Boolean> existsByEmail(String email) {
         logger.info("existsByEmail: email={}", email);
 
@@ -102,5 +98,25 @@ public class UserUseCase implements IUserUseCase {
                 .doOnSubscribe(s -> logger.trace("Validation pipeline started for id number = {}", idNumber))
                 .flatMap(userRepository::existsByIdNumber)
                 .doOnNext(exists -> logger.info("existsByIdNumber result = {}", exists));
+    }
+
+    private boolean hasFilters(UserSearchFilters userSearchFilters) {
+        return (userSearchFilters.firstName() != null && !userSearchFilters.firstName().isEmpty())
+                || (userSearchFilters.lastName() != null && !userSearchFilters.lastName().isEmpty())
+                || (userSearchFilters.email() != null && !userSearchFilters.email().isEmpty())
+                || userSearchFilters.birthDateFrom() != null
+                || userSearchFilters.birthDateTo() != null
+                || (userSearchFilters.idNumber() != null && !userSearchFilters.idNumber().isEmpty())
+                || (userSearchFilters.phone() != null && !userSearchFilters.phone().isEmpty())
+                || userSearchFilters.roleName() != null
+                || (userSearchFilters.minBaseSalary() != null && userSearchFilters.minBaseSalary() > 0)
+                || (userSearchFilters.maxBaseSalary() != null && userSearchFilters.maxBaseSalary() > 0);
+    }
+
+    public Flux<UserFilter> findUsers(UserSearchFilters userSearchFilters) {
+        return Mono.justOrEmpty(userSearchFilters)
+                .flatMapMany(f -> hasFilters(f)
+                        ? userRepository.search(f)
+                        : userRepository.getAllWithRoleType());
     }
 }

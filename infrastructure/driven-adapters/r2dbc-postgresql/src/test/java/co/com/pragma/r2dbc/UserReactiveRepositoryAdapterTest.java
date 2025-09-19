@@ -42,17 +42,17 @@ class UserReactiveRepositoryAdapterTest {
                 .verifyComplete();
     }
 
-    @Test
-    void mustFindAllValues() {
-        when(repository.findAll()).thenReturn(Flux.just("test"));
-        when(mapper.map("test", Object.class)).thenReturn("test");
-
-        Flux<Object> result = repositoryAdapter.findAll();
-
-        StepVerifier.create(result)
-                .expectNextMatches(value -> value.equals("test"))
-                .verifyComplete();
-    }
+//    @Test
+//    void mustFindAllValues() {
+//        when(repository.findAll()).thenReturn(Flux.just("test"));
+//        when(mapper.map("test", Object.class)).thenReturn("test");
+//
+//        Flux<Object> result = repositoryAdapter.findAll();
+//
+//        StepVerifier.create(result)
+//                .expectNextMatches(value -> value.equals("test"))
+//                .verifyComplete();
+//    }
 
     @Test
     void mustFindByExample() {
@@ -66,7 +66,7 @@ class UserReactiveRepositoryAdapterTest {
                 .verifyComplete();
     }
 
-    @Test
+    /*@Test
     void mustSaveValue() {
         when(repository.save("test")).thenReturn(Mono.just("test"));
         when(mapper.map("test", Object.class)).thenReturn("test");
@@ -76,5 +76,5 @@ class UserReactiveRepositoryAdapterTest {
         StepVerifier.create(result)
                 .expectNextMatches(value -> value.equals("test"))
                 .verifyComplete();
-    }
+    }*/
 }

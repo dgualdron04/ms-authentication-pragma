@@ -45,7 +45,7 @@ routes:
     existsByIdNumber: "/api/v1/usuarios/idNumber/{idNumber}"
     login: "/api/v1/login"
     hello: "/hello"
-    swagger: "/webjars/swagger-ui/**"
+
 jwt:
   secret: "GKU2sCyjHN2D4KXdLKsxRn3UDKI1TjTdP3pxzMzfIE8="
   expiration: 3600

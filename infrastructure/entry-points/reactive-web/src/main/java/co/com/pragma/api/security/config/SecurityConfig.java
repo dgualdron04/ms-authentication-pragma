@@ -1,24 +1,19 @@
 package co.com.pragma.api.security.config;
 
 import co.com.pragma.api.config.UserPath;
-import co.com.pragma.api.security.exception.SecurityAppException;
-import co.com.pragma.api.security.jwt.filter.JwtFilter;
 import co.com.pragma.api.security.repository.SecurityContextRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import utils.ErrorTypes;
@@ -43,16 +38,20 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityWebFilterChain filterChain(ServerHttpSecurity http, JwtFilter jwtFilter) {
+    public SecurityWebFilterChain filterChain(ServerHttpSecurity http) {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchangeSpec ->
                         exchangeSpec.pathMatchers(
                                 userPath.getLogin(),
-                                userPath.getSwagger())
+                                userPath.getUsers(),
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs/swagger-config",
+                                "/webjars/**")
                             .permitAll()
                         .anyExchange().authenticated())
-//                .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .securityContextRepository(securityContextRepository)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)

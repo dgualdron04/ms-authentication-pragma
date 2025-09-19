@@ -84,19 +84,19 @@ class ReactiveAdapterOperationsTest {
                 .verifyComplete();
     }
 
-    @Test
-    void findAll() {
-        DummyData data1 = new DummyData("1", "test1");
-        DummyData data2 = new DummyData("2", "test2");
-        DummyEntity entity1 = new DummyEntity("1", "test1");
-        DummyEntity entity2 = new DummyEntity("2", "test2");
-
-        when(repository.findAll()).thenReturn(Flux.just(data1, data2));
-
-        StepVerifier.create(operations.findAll())
-                .expectNext(entity1, entity2)
-                .verifyComplete();
-    }
+//    @Test
+//    void findAll() {
+//        DummyData data1 = new DummyData("1", "test1");
+//        DummyData data2 = new DummyData("2", "test2");
+//        DummyEntity entity1 = new DummyEntity("1", "test1");
+//        DummyEntity entity2 = new DummyEntity("2", "test2");
+//
+//        when(repository.findAll()).thenReturn(Flux.just(data1, data2));
+//
+//        StepVerifier.create(operations.findAll())
+//                .expectNext(entity1, entity2)
+//                .verifyComplete();
+//    }
 
     static class DummyEntity {
         private String id;

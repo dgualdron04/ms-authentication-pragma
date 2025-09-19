@@ -6,6 +6,8 @@ import co.com.pragma.api.dto.request.UserRequest;
 import co.com.pragma.api.exception.model.InternalException;
 import co.com.pragma.api.mapper.UserApiMapper;
 import co.com.pragma.model.user.User;
+import co.com.pragma.model.user.UserFilter;
+import co.com.pragma.model.user.UserSearchFilters;
 import co.com.pragma.usecase.login.ILogInUseCase;
 import co.com.pragma.usecase.user.IUserUseCase;
 import co.com.pragma.usecase.user.UserUseCase;
@@ -43,12 +45,24 @@ public class Handler {
                 .onErrorResume(ex -> Mono.error(ex instanceof DomainException ? ex : new InternalException(ex, null)));
     }
 
+    @PreAuthorize("hasAnyAuthority('ADVISOR')")
     public Mono<ServerResponse> listenGetAllUsers(ServerRequest serverRequest) {
+        UserSearchFilters filters = new UserSearchFilters(
+                serverRequest.queryParam("firstName").orElse(null),
+                serverRequest.queryParam("lastName").orElse(null),
+                serverRequest.queryParam("email").orElse(null),
+                serverRequest.queryParam("birthDateFrom").map(java.time.LocalDate::parse).orElse(null),
+                serverRequest.queryParam("birthDateTo").map(java.time.LocalDate::parse).orElse(null),
+                serverRequest.queryParam("idNumber").orElse(null),
+                serverRequest.queryParam("phone").orElse(null),
+                serverRequest.queryParam("roleName").orElse(null),
+                serverRequest.queryParam("minBaseSalary").map(Integer::valueOf).orElse(null),
+                serverRequest.queryParam("maxBaseSalary").map(Integer::valueOf).orElse(null)
+        );
+
         return ServerResponse.ok()
-                //.contentType(MediaType.APPLICATION_JSON)
-                //.contentType(MediaType.APPLICATION_NDJSON)
                 .contentType(MediaType.TEXT_EVENT_STREAM)
-                .body(userUseCase.getAllUsers(), User.class);
+                .body(userUseCase.findUsers(filters), UserFilter.class);
     }
 
     @PreAuthorize("hasAnyAuthority('SERVICE', 'CLIENT')")

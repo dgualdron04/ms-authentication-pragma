@@ -24,4 +24,12 @@ public enum RoleTypes {
                 .findFirst()
                 .orElseThrow(() -> new BusinessRuleViolatedException("The role does not exist: " + name));
     }
+
+    public static RoleTypes fromCode(String code) {
+        try {
+            return valueOf(code.trim().toUpperCase());
+        } catch (Exception ex) {
+            throw new BusinessRuleViolatedException("The role does not exist: " + code);
+        }
+    }
 }

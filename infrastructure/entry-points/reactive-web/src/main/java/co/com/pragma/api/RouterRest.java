@@ -27,6 +27,7 @@ public class RouterRest {
                 .GET (userPath.getExistsByIdNumber(), userHandler::existsByIdNumber, userDocs.existsByIdNumber())
                 .GET(userPath.getHello(), userHandler::hello, userDocs.login())
                 .POST(userPath.getLogin(), userHandler::logIn, userDocs.login())
+                .GET(userPath.getUsers(), userHandler::listenGetAllUsers, userDocs.login())
                 .build();
 
         return routes.filter(globalErrorHandler);
