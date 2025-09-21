@@ -5,13 +5,10 @@ import co.com.pragma.api.dto.request.TokenDTO;
 import co.com.pragma.api.dto.request.UserRequest;
 import co.com.pragma.api.exception.model.InternalException;
 import co.com.pragma.api.mapper.UserApiMapper;
-import co.com.pragma.model.user.User;
 import co.com.pragma.model.user.UserFilter;
 import co.com.pragma.model.user.UserSearchFilters;
 import co.com.pragma.usecase.login.ILogInUseCase;
 import co.com.pragma.usecase.user.IUserUseCase;
-import co.com.pragma.usecase.user.UserUseCase;
-import exception.BusinessRuleViolatedException;
 import exception.DomainException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,8 +18,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+import utils.pagination.PageOptions;
+import utils.pagination.PageResult;
+import utils.pagination.SortOrder;
 
-import javax.print.attribute.standard.Media;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -47,7 +47,44 @@ public class Handler {
 
     @PreAuthorize("hasAnyAuthority('ADVISOR')")
     public Mono<ServerResponse> listenGetAllUsers(ServerRequest serverRequest) {
-        UserSearchFilters filters = new UserSearchFilters(
+        UserSearchFilters filters = searchFilters(serverRequest);
+
+        boolean existPaging = serverRequest.queryParam("page").isPresent()
+                || serverRequest.queryParam("size").isPresent()
+                || serverRequest.queryParam("sort").isPresent();
+
+        if (!existPaging) {
+            return ServerResponse.ok()
+                    .contentType(MediaType.TEXT_EVENT_STREAM)
+                    .body(userUseCase.findUsers(filters), UserFilter.class);
+        }
+
+        int page = serverRequest.queryParam("page").map(Integer::parseInt).orElse(0);
+        int size = serverRequest.queryParam("size").map(Integer::parseInt).orElse(20);
+
+        if (page <= 0) page = 0;
+        if (size <= 0) size = 20;
+        if (size > 100) size = 100;
+
+        List<SortOrder> sort = serverRequest.queryParams().getOrDefault("sort", List.of())
+                .stream()
+                .map(s -> {
+                    String[] p = s.split(",", 2);
+                    String field = p[0].trim();
+                    boolean asc = p.length < 2 || !"desc".equalsIgnoreCase(p[1].trim());
+                    return new SortOrder(field, asc);
+                })
+                .toList();
+
+        PageOptions pageOptions = new PageOptions(page, size, sort);
+
+        return ServerResponse.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(userUseCase.findUsersPaged(filters, pageOptions), PageResult.class);
+    }
+
+    private UserSearchFilters searchFilters(ServerRequest serverRequest) {
+        return new UserSearchFilters(
                 serverRequest.queryParam("firstName").orElse(null),
                 serverRequest.queryParam("lastName").orElse(null),
                 serverRequest.queryParam("email").orElse(null),
@@ -59,10 +96,6 @@ public class Handler {
                 serverRequest.queryParam("minBaseSalary").map(Integer::valueOf).orElse(null),
                 serverRequest.queryParam("maxBaseSalary").map(Integer::valueOf).orElse(null)
         );
-
-        return ServerResponse.ok()
-                .contentType(MediaType.TEXT_EVENT_STREAM)
-                .body(userUseCase.findUsers(filters), UserFilter.class);
     }
 
     @PreAuthorize("hasAnyAuthority('SERVICE', 'CLIENT')")

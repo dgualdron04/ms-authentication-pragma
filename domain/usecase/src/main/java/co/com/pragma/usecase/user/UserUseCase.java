@@ -15,6 +15,8 @@ import gateways.TransactionalGateway;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import utils.pagination.PageOptions;
+import utils.pagination.PageResult;
 
 import java.util.List;
 import java.util.UUID;
@@ -118,5 +120,11 @@ public class UserUseCase implements IUserUseCase {
                 .flatMapMany(f -> hasFilters(f)
                         ? userRepository.search(f)
                         : userRepository.getAllWithRoleType());
+    }
+
+    public Mono<PageResult<UserFilter>> findUsersPaged(UserSearchFilters userSearchFilters, PageOptions pageOptions) {
+        return hasFilters(userSearchFilters)
+                ? userRepository.searchPaged(userSearchFilters, pageOptions)
+                : userRepository.getAllWithRoleTypePaged(pageOptions);
     }
 }
