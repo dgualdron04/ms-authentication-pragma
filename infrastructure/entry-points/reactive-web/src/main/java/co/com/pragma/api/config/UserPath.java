@@ -19,5 +19,5 @@ public final class UserPath {
     private String existsByIdNumber;
     private String login;
     private String hello;
-    private List<String> swagger = new ArrayList<>();
+    private String actuator;
 }

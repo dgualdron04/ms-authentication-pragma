@@ -27,7 +27,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class Handler {
+public class wwwwHandler {
 
     private final IUserUseCase userUseCase;
     private final UserApiMapper userApiMapper;

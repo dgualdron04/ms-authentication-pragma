@@ -45,6 +45,7 @@ public class SecurityConfig {
                         exchangeSpec.pathMatchers(
                                 userPath.getLogin(),
                                 userPath.getUsers(),
+                                userPath.getActuator(),
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
